@@ -6,6 +6,7 @@ import 'package:get/state_manager.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
 import 'package:safeshopping/controllers/productController.dart';
+import 'package:safeshopping/pages/profile.dart';
 
 class SearchStore extends StatefulWidget {
   @override
@@ -191,7 +192,9 @@ class _SearchStoreState extends State<SearchStore> {
             IconButton(
                 iconSize: 30,
                 icon: const Icon(Icons.person),
-                onPressed: () {}), //ToDo: To User profile page
+                onPressed: () {
+                  Get.to(Profile());
+                }), //ToDo: To User profile page
           ],
         ),
       ),
