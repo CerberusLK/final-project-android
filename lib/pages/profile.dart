@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:safeshopping/controllers/UserController.dart';
 
 void main() {
   runApp(GetMaterialApp(
@@ -22,7 +23,9 @@ class _ProfileState extends State<Profile> {
     final TextEditingController confirmPassController = TextEditingController();
     final TextEditingController currentPassController = TextEditingController();
 
-    bool isTextEnabled = true;
+    UserController _userController = Get.put(UserController());
+
+    bool enabled = true;
 
     return Scaffold(
         appBar: AppBar(
@@ -31,16 +34,8 @@ class _ProfileState extends State<Profile> {
           actions: [
             IconButton(
               icon: const Icon(Icons.edit_rounded),
-              onPressed: () {
-                setState(() {
-                  if(isTextEnabled){
-                    isTextEnabled = false;
-                  }
-                  else{
-                    isTextEnabled=true;
-                  }
-                });
-              }, //Todo: Enable or disable the editable of text fields
+              onPressed:
+                  () {}, //Todo: Enable or disable the editable of text fields
             )
           ],
         ),
@@ -116,31 +111,49 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                     ),
-                    TextField(
-                      enabled: isTextEnabled,
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.account_box_outlined),
-                        hintText: "Name",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    Obx(() {
+                      if (_userController.user.name != null) {
+                        nameController.text = _userController.user.name;
+                        enabled = true;
+                      } else {
+                        nameController.text = "Loading...";
+                        enabled = false;
+                      }
+                      return TextField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.account_box_outlined),
+                          hintText: "Name",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                     SizedBox(
                       height: 10,
                     ),
-                    TextField(
-                      enabled: isTextEnabled,
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        hintText: "Email",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    Obx(() {
+                      bool enabled;
+                      if (_userController.user.email != null) {
+                        emailController.text = _userController.user.email;
+                        enabled = true;
+                      } else {
+                        emailController.text = "Loading...";
+                        enabled = false;
+                      }
+                      return TextField(
+                        enabled: enabled,
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.email_outlined),
+                          hintText: "Email",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                     SizedBox(
                       height: 5,
                     ),

@@ -25,6 +25,8 @@ class AuthController extends GetxController {
           UserModel(id: _authResult.user.uid, name: name, email: email);
       if (await FirestoreServices().createNewUser(_user)) {
         Get.find<UserController>().user = _user;
+        Get.find<UserController>().user =
+            await FirestoreServices().getUser(_authResult.user.uid);
       }
     } catch (e) {
       print(e);
@@ -38,10 +40,11 @@ class AuthController extends GetxController {
 
   void login(String email, String password) async {
     try {
-      AuthResult _authResut = await _auth.signInWithEmailAndPassword(
+      AuthResult _authResult = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
+      print(_authResult.user.uid);
       Get.find<UserController>().user =
-          await FirestoreServices().getUser(_authResut.user.uid);
+          await FirestoreServices().getUser(_authResult.user.uid);
     } catch (e) {
       print(e);
       Get.snackbar(

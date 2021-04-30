@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/models/User.dart';
 
 class FirestoreServices extends GetxController {
@@ -28,10 +29,27 @@ class FirestoreServices extends GetxController {
     try {
       DocumentSnapshot doc =
           await _db.collection("Customer").document(uid).get();
-      return UserModel.fromDocumentSnapshot(doc);
+      UserModel _userModel = UserModel.fromDocumentSnapshot(doc);
+      print(_userModel.id);
+      print(_userModel.name);
+      print(_userModel.email);
+      return _userModel;
     } catch (e) {
       print(e);
       rethrow;
     }
+  }
+
+  Future<List<ProductModel>> getProducts() async {
+    QuerySnapshot querySnapshot =
+        await _db.collection("Products").getDocuments();
+    return querySnapshot.documents.map((e) => ProductModel(
+          e.documentID,
+          e.data['brand name'],
+          e.data['price'],
+          e.data['product name'],
+          e.data['quantity'],
+          e.data['storeId'],
+        ));
   }
 }
