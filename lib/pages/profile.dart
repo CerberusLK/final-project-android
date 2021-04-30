@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
 
 void main() {
@@ -24,6 +25,7 @@ class _ProfileState extends State<Profile> {
     final TextEditingController currentPassController = TextEditingController();
 
     UserController _userController = Get.put(UserController());
+    AuthController _authController = Get.put(AuthController());
 
     bool enabled = true;
 
@@ -211,7 +213,19 @@ class _ProfileState extends State<Profile> {
                                           RaisedButton(
                                             child: Text("Update Password"),
                                             onPressed: () {
-                                              Navigator.of(context).pop();
+                                              if (passwordController.text ==
+                                                  confirmPassController.text) {
+                                                _authController
+                                                    .changeUserPassword(
+                                                        passwordController
+                                                            .text);
+                                                Navigator.of(context).pop();
+                                              } else {
+                                                Get.snackbar("Message",
+                                                    "Passwords don't match");
+                                                passwordController.text = "";
+                                                confirmPassController.text = "";
+                                              }
                                             }, //Todo: Update Password method
                                           )
                                         ],

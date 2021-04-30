@@ -56,6 +56,30 @@ class AuthController extends GetxController {
     }
   }
 
+  void changeUserCredentials(String password) async {
+    FirebaseUser firebaseUser = await _auth.currentUser();
+    AuthResult authResult = await firebaseUser.reauthenticateWithCredential(
+      EmailAuthProvider.getCredential(
+        email: user.email,
+        password: password,
+      ),
+    );
+  }
+
+  void changeUserPassword(String newPassword) async {
+    try {
+      FirebaseUser firebaseUser = await _auth.currentUser();
+      user.updatePassword(newPassword);
+      signOut();
+    } catch (e) {
+      Get.snackbar(
+        "Error in change password",
+        e.message,
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
+
   void signOut() async {
     try {
       await _auth.signOut();
