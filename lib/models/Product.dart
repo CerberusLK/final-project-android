@@ -3,30 +3,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ProductModel {
   String productId;
   String productName;
-  double price;
-  double quantity;
+  String price;
+  String quantity;
   String measurement;
   String storeId;
+  String brandName;
 
-  ProductModel(
-    String _productId,
-    String _productName,
-    double _price,
-    double _quantity,
-    String _measurement,
-    String _storeId,
-  )   : this.productId = _productId,
-        this.price = _price,
-        this.quantity = _quantity,
-        this.measurement = _measurement,
-        this.storeId = _storeId;
+  ProductModel(this.measurement, this.price, this.productId, this.productName,
+      this.quantity, this.storeId, this.brandName);
 
-  ProductModel.fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
+  ProductModel.fromDocumentSnapshot(
+    DocumentSnapshot documentSnapshot,
+  ) {
     productId = documentSnapshot.documentID;
     productName = documentSnapshot.data["productName"];
-    price = double.parse(documentSnapshot.data["price"]);
-    quantity = double.parse(documentSnapshot.data["quantity"]);
+    price = documentSnapshot.data["price"];
+    quantity = documentSnapshot.data["quantity"];
     measurement = documentSnapshot.data["measurement"];
     storeId = documentSnapshot.data["storeId"];
+    brandName = documentSnapshot.data["brand name"];
   }
 }

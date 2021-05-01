@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/models/User.dart';
@@ -40,16 +41,38 @@ class FirestoreServices extends GetxController {
     }
   }
 
-  Future<List<ProductModel>> getProducts() async {
-    QuerySnapshot querySnapshot =
-        await _db.collection("Products").getDocuments();
-    return querySnapshot.documents.map((e) => ProductModel(
-          e.documentID,
-          e.data['brand name'],
-          e.data['price'],
-          e.data['product name'],
-          e.data['quantity'],
-          e.data['storeId'],
-        ));
+  Stream<List<ProductModel>> productStream() {
+    return _db
+        .collection("Products")
+        .snapshots()
+        .map((QuerySnapshot querySnapshot) {
+      List<ProductModel> retVal = List();
+      querySnapshot.documents.forEach((element) {
+        retVal.add(ProductModel.fromDocumentSnapshot(element));
+      });
+      print(retVal.length);
+      print(retVal[0].productName);
+      return retVal;
+    });
   }
+
+// Future<List<ProductModel>> getProducts() async {
+//   QuerySnapshot querySnapshot =
+//       await _db.collection("Products").getDocuments();
+
+// List<DocumentSnapshot> templist;
+// List<Map<dynamic, dynamic>> list = new List();
+// list = templist.map((DocumentSnapshot documentSnapshot) {
+//   return documentSnapshot.data;
+// }).toList();
+
+// return list;
+// return querySnapshot.documents.map((e) => ProductModel(
+//       e.documentID,
+//       e.data['brand name'],
+//       e.data['price'],
+//       e.data['product name'],
+//       e.data['quantity'],
+//       e.data['storeId'],
+//     ));
 }

@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/state_manager.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
+import 'package:safeshopping/controllers/ProductController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
-import 'package:safeshopping/controllers/productController.dart';
 import 'package:safeshopping/pages/profile.dart';
 
 class SearchStore extends StatefulWidget {
@@ -16,7 +16,7 @@ class SearchStore extends StatefulWidget {
 class _SearchStoreState extends State<SearchStore> {
   final UserController userController = Get.put(UserController());
   final AuthController authController = AuthController();
-  final StoreController storeController = Get.put(StoreController());
+  ProductController productController = Get.put(ProductController());
 
   final TextEditingController searchController = TextEditingController();
 
@@ -24,6 +24,10 @@ class _SearchStoreState extends State<SearchStore> {
   Widget build(BuildContext context) {
     int counter = 0;
 
+    var itemCount = 0;
+    (productController.products.length == null)
+        ? itemCount = 0
+        : itemCount = productController.products.length;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Safe Shopping"),
@@ -151,23 +155,31 @@ class _SearchStoreState extends State<SearchStore> {
               ],
             ),
           ),
+          Container(), //Todo: return values are here
           Expanded(
-            child: Obx(
-              () => StaggeredGridView.countBuilder(
+              child: StaggeredGridView.countBuilder(
                   crossAxisCount: 2,
-                  itemCount: storeController.productList.length,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
+                  itemCount: itemCount,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
                   itemBuilder: (context, index) {
-                    return Container(
-                      height: 200,
-                      width: 100,
-                      color: Colors.lightBlueAccent,
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        decoration: new BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(5)),
+                        height: 200,
+                        width: 150,
+                        child: Column(
+                          children: [
+                            Text(productController.products[index].productName)
+                          ],
+                        ),
+                      ),
                     );
                   },
-                  staggeredTileBuilder: (index) => StaggeredTile.fit(1)),
-            ),
-          ),
+                  staggeredTileBuilder: (index) => StaggeredTile.fit(1)))
         ],
       ),
       bottomNavigationBar: BottomAppBar(
