@@ -8,9 +8,10 @@ class ProductModel {
   String measurement;
   String storeId;
   String brandName;
+  String imgString;
 
   ProductModel(this.measurement, this.price, this.productId, this.productName,
-      this.quantity, this.storeId, this.brandName);
+      this.quantity, this.storeId, this.brandName, this.imgString);
 
   ProductModel.fromDocumentSnapshot(
     DocumentSnapshot documentSnapshot,
@@ -21,6 +22,7 @@ class ProductModel {
     quantity = documentSnapshot.data["quantity"];
     measurement = documentSnapshot.data["measurement"];
     storeId = documentSnapshot.data["storeId"];
-    brandName = documentSnapshot.data["brand name"];
+    brandName = documentSnapshot.data["brandName"];
+    imgString = documentSnapshot.data["imgString"];
   }
 }

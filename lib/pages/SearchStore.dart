@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/get.dart';
@@ -6,6 +8,7 @@ import 'package:get/state_manager.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/ProductController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
+import 'package:safeshopping/pages/Product.dart';
 import 'package:safeshopping/pages/profile.dart';
 
 class SearchStore extends StatefulWidget {
@@ -157,29 +160,84 @@ class _SearchStoreState extends State<SearchStore> {
           ),
           Container(), //Todo: return values are here
           Expanded(
-              child: StaggeredGridView.countBuilder(
-                  crossAxisCount: 2,
-                  itemCount: itemCount,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        decoration: new BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(5)),
-                        height: 200,
-                        width: 150,
-                        child: Column(
-                          children: [
-                            Text(productController.products[index].productName)
-                          ],
-                        ),
+            child: StaggeredGridView.countBuilder(
+              crossAxisCount: 2,
+              itemCount: itemCount,
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2,
+              itemBuilder: (context, index) {
+                return InkWell(
+                  onTap: () {
+                    print("Card Clicked" +
+                        productController.products[index].productName);
+                    Get.to(Product(), arguments: [
+                      productController.products[index].imgString,
+                      productController.products[index].productName,
+                      productController.products[index].brandName,
+                      productController.products[index].price,
+                      productController.products[index].measurement,
+                      productController.products[index].quantity,
+                      productController.products[index].storeId,
+                    ]);
+                  }, //Todo: Navigate to product page
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Container(
+                      decoration: new BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(5)),
+                      // height: 200,
+                      // width: 150,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Image.memory(Base64Codec().decode(
+                                  productController.products[index].imgString)),
+                            ),
+                          ),
+                          Text(productController.products[index].productName),
+                          Text(productController.products[index].productName),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(productController.products[index].price +
+                              " " +
+                              productController.products[index].measurement),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "Rs. " +
+                                      productController.products[index].price +
+                                      ".00",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 18,
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  staggeredTileBuilder: (index) => StaggeredTile.fit(1)))
+                    ),
+                  ),
+                );
+              },
+              staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: BottomAppBar(
