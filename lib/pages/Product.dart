@@ -10,6 +10,27 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   var args = Get.arguments;
+  var counter = 1.obs;
+
+  void increment() {
+    if (counter >= 20) {
+      Get.snackbar(
+          "Message", "You might need to contact the seller for the order");
+    } else
+      counter.update((val) {
+        counter++;
+      });
+  }
+
+  void decrement() {
+    if (counter > 1) {
+      counter.update((val) {
+        counter--;
+      });
+    } else {
+      Get.snackbar("Message", "Quantity cannot be less than 1 item");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,85 +60,113 @@ class _ProductPageState extends State<ProductPage> {
                   child: Image.memory(Base64Codec().decode(imgString)),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    productName,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 2, 0, 8),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    brandName,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 8, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 2, 0, 8),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Rs. " + price + ".00",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            productName,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "per " + quantity + " " + measurement,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 2, 0, 8),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            brandName,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(20)),
-                      onPressed: () {},
-                      child: Row(
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 2, 0, 2),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Rs. " + price + ".00",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 0, 0, 8),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "per " + quantity + " " + measurement,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Row(
                         children: [
-                          Text("Add to Cart"),
+                          IconButton(
+                              icon: Icon(Icons.remove),
+                              onPressed: () {
+                                decrement();
+                              }),
                           SizedBox(
-                            width: 20,
+                            width: 12,
                           ),
-                          Icon(Icons.add_shopping_cart_rounded),
+                          Obx(() => Text(counter.toString())),
+                          SizedBox(
+                            width: 12,
+                          ),
+                          IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () {
+                                increment();
+                              }),
                         ],
                       ),
-                    ),
-                  ],
-                ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(20)),
+                            onPressed: () {}, //Todo: Add item to cart
+                            child: Row(
+                              children: [
+                                Text("Add to Cart"),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Icon(Icons.add_shopping_cart_rounded),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  )
+                ],
               )
             ],
           ),
