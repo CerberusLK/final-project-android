@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:safeshopping/controllers/AuthController.dart';
+import 'package:safeshopping/controllers/UserController.dart';
+import 'package:safeshopping/services/FirestoreServices.dart';
 
 class ProductPage extends StatefulWidget {
   @override
@@ -32,15 +35,20 @@ class _ProductPageState extends State<ProductPage> {
     }
   }
 
+  AuthController _authController = Get.find<AuthController>();
+  UserController _userController = Get.find<UserController>();
+
   @override
   Widget build(BuildContext context) {
+    // Get.find<UserController>().user = await FirestoreServices().getUser(Get.find<AuthController>().user.uid);
     String imgString = args[0];
     String productName = args[1];
     String brandName = args[2];
     String price = args[3];
     String measurement = args[4];
-    String quantity = args[5];
+    String productQuantity = args[5];
     String storeId = args[6];
+    String productId = args[7];
 
     return Scaffold(
       appBar: AppBar(
@@ -110,7 +118,7 @@ class _ProductPageState extends State<ProductPage> {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "per " + quantity + " " + measurement,
+                            "per " + productQuantity + " " + measurement,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -132,7 +140,13 @@ class _ProductPageState extends State<ProductPage> {
                           SizedBox(
                             width: 12,
                           ),
-                          Obx(() => Text(counter.toString())),
+                          Obx(() => Text(
+                                counter.toString(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              )),
                           SizedBox(
                             width: 12,
                           ),
@@ -151,7 +165,13 @@ class _ProductPageState extends State<ProductPage> {
                           RaisedButton(
                             shape: RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(20)),
-                            onPressed: () {}, //Todo: Add item to cart
+                            onPressed: () {
+                              FirestoreServices().addOrder(
+                                  _authController.user.uid,
+                                  storeId,
+                                  productId,
+                                  counter.toString());
+                            }, //Todo: Add item to cart
                             child: Row(
                               children: [
                                 Text("Add to Cart"),

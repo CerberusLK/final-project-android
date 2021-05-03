@@ -176,8 +176,9 @@ class _SearchStoreState extends State<SearchStore> {
                       productController.products[index].brandName,
                       productController.products[index].price,
                       productController.products[index].measurement,
-                      productController.products[index].quantity,
+                      productController.products[index].productQuantity,
                       productController.products[index].storeId,
+                      productController.products[index].productId
                     ]);
                   }, //Todo: Navigate to product page
                   child: Padding(
