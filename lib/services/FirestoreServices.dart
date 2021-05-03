@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/models/User.dart';

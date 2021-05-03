@@ -170,7 +170,7 @@ class _SearchStoreState extends State<SearchStore> {
                   onTap: () {
                     print("Card Clicked" +
                         productController.products[index].productName);
-                    Get.to(Product(), arguments: [
+                    Get.to(ProductPage(), arguments: [
                       productController.products[index].imgString,
                       productController.products[index].productName,
                       productController.products[index].brandName,

@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class Product extends StatefulWidget {
+class ProductPage extends StatefulWidget {
   @override
-  _ProductState createState() => _ProductState();
+  _ProductPageState createState() => _ProductPageState();
 }
 
-class _ProductState extends State<Product> {
+class _ProductPageState extends State<ProductPage> {
   var args = Get.arguments;
 
   @override
