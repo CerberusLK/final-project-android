@@ -166,7 +166,7 @@ class _ProductPageState extends State<ProductPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(20)),
                             onPressed: () {
-                              FirestoreServices().addOrder(
+                              FirestoreServices().addToShoppingCart(
                                   _authController.user.uid,
                                   storeId,
                                   productId,

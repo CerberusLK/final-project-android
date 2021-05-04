@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/models/Product.dart';
+import 'package:safeshopping/models/ShoppingCart.dart';
 import 'package:safeshopping/models/User.dart';
 
 class FirestoreServices extends GetxController {
@@ -42,6 +43,18 @@ class FirestoreServices extends GetxController {
     }
   }
 
+  Future<ProductModel> getProduct(String productId) async {
+    try {
+      DocumentSnapshot doc =
+          await _db.collection("Products").document(productId).get();
+      ProductModel _productModel = ProductModel.fromDocumentSnapshot(doc);
+      return _productModel;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
   Stream<List<ProductModel>> productStream() {
     return _db
         .collection("Products")
@@ -57,15 +70,30 @@ class FirestoreServices extends GetxController {
     });
   }
 
-  Future<void> addOrder(String customerId, String storeId, String productId,
-      String quantity) async {
+  Stream<List<ShoppingCartModel>> shoppingCartStream(String userId) {
+    return _db
+        .collection("Customer")
+        .document(userId)
+        .collection("ShoppingCart")
+        .snapshots()
+        .map((QuerySnapshot querySnapshot) {
+      List<ShoppingCartModel> retVal = List();
+      querySnapshot.documents.forEach((element) {
+        retVal.add(ShoppingCartModel.fromDocumentSnapshot(element));
+      });
+      return retVal;
+    });
+  }
+
+  Future<void> addToShoppingCart(String customerId, String storeId,
+      String productId, String quantity) async {
     try {
       await _db
           .collection("Customer")
           .document(customerId)
           .collection("ShoppingCart")
           .add({
-        'StoreId': storeId,
+        'storeId': storeId,
         'productId': productId,
         'quantity': quantity,
         'dateAdded': Timestamp.now(),

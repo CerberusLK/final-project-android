@@ -8,8 +8,9 @@ import 'package:get/state_manager.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/ProductController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
-import 'package:safeshopping/pages/Product.dart';
-import 'package:safeshopping/pages/profile.dart';
+import 'package:safeshopping/pages/ProductPage.dart';
+import 'package:safeshopping/pages/ShoppingCartPage.dart';
+import 'package:safeshopping/pages/UserProfilePage.dart';
 
 class SearchStore extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class SearchStore extends StatefulWidget {
 class _SearchStoreState extends State<SearchStore> {
   final UserController userController = Get.put(UserController());
   final AuthController authController = AuthController();
-  ProductController productController = Get.put(ProductController());
+  final ProductController productController = Get.put(ProductController());
 
   final TextEditingController searchController = TextEditingController();
 
@@ -40,10 +41,8 @@ class _SearchStoreState extends State<SearchStore> {
               new IconButton(
                   icon: const Icon(Icons.add_shopping_cart_rounded),
                   onPressed: () {
+                    Get.to(() => ShoppingCartPage());
                     //ToDo: Link to Cart Page
-                    setState(() {
-                      counter = 2;
-                    });
                   }),
               counter != 0
                   ? new Positioned(
@@ -160,84 +159,94 @@ class _SearchStoreState extends State<SearchStore> {
           ),
           Container(), //Todo: return values are here
           Expanded(
-            child: StaggeredGridView.countBuilder(
-              crossAxisCount: 2,
-              itemCount: itemCount,
-              crossAxisSpacing: 2,
-              mainAxisSpacing: 2,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    print("Card Clicked" +
-                        productController.products[index].productName);
-                    Get.to(ProductPage(), arguments: [
-                      productController.products[index].imgString,
-                      productController.products[index].productName,
-                      productController.products[index].brandName,
-                      productController.products[index].price,
-                      productController.products[index].measurement,
-                      productController.products[index].productQuantity,
-                      productController.products[index].storeId,
-                      productController.products[index].productId
-                    ]);
-                  }, //Todo: Navigate to product page
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Container(
-                      decoration: new BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(5)),
-                      // height: 200,
-                      // width: 150,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Image.memory(Base64Codec().decode(
-                                  productController.products[index].imgString)),
-                            ),
-                          ),
-                          Text(productController.products[index].productName),
-                          Text(productController.products[index].productName),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(productController.products[index].price +
-                              " " +
-                              productController.products[index].measurement),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+            child: Obx(() => StaggeredGridView.countBuilder(
+                  crossAxisCount: 2,
+                  itemCount: productController.products.length,
+                  crossAxisSpacing: 2,
+                  mainAxisSpacing: 2,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        print("Card Clicked" +
+                            productController.products[index].productName);
+                        Get.to(ProductPage(), arguments: [
+                          productController.products[index].imgString,
+                          productController.products[index].productName,
+                          productController.products[index].brandName,
+                          productController.products[index].price,
+                          productController.products[index].measurement,
+                          productController.products[index].productQuantity,
+                          productController.products[index].storeId,
+                          productController.products[index].productId
+                        ]);
+                      }, //Todo: Navigate to product page
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Material(
+                          elevation: 5,
+                          child: Container(
+                            decoration: new BoxDecoration(
+                                // color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(8.0)),
+                            // height: 200,
+                            // width: 150,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text(
-                                  "Rs. " +
-                                      productController.products[index].price +
-                                      ".00",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Image.memory(Base64Codec().decode(
+                                        productController
+                                            .products[index].imgString)),
                                   ),
+                                ),
+                                Text(productController
+                                    .products[index].productName),
+                                Text(productController
+                                    .products[index].productName),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(productController.products[index].price +
+                                    " " +
+                                    productController
+                                        .products[index].measurement),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        "Rs. " +
+                                            productController
+                                                .products[index].price +
+                                            ".00",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 18,
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 18,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
-              staggeredTileBuilder: (index) => StaggeredTile.fit(1),
-            ),
+                    );
+                  },
+                  staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+                )),
           ),
         ],
       ),
