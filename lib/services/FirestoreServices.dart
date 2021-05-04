@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/models/Product.dart';
@@ -81,26 +79,99 @@ class FirestoreServices extends GetxController {
       querySnapshot.documents.forEach((element) {
         retVal.add(ShoppingCartModel.fromDocumentSnapshot(element));
       });
+      print("shopping cart = " + retVal.length.toString());
       return retVal;
     });
   }
 
+  Future<ShoppingCartModel> getShoppingCartItem(
+      String productId, String userId) async {
+    try {
+      DocumentSnapshot doc = await _db
+          .collection("Customer")
+          .document(userId)
+          .collection("ShoppingCart")
+          .document(productId)
+          .get();
+      if (doc.exists) {
+        ShoppingCartModel _shoppingCartModel =
+            ShoppingCartModel.fromDocumentSnapshot(doc);
+        return _shoppingCartModel;
+      } else
+        return null;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
   Future<void> addToShoppingCart(String customerId, String storeId,
       String productId, String quantity) async {
+    ShoppingCartModel item = await getShoppingCartItem(productId, customerId);
     try {
+      if (item == null) {
+        await _db
+            .collection("Customer")
+            .document(customerId)
+            .collection("ShoppingCart")
+            .document(productId)
+            .setData({
+          'storeId': storeId,
+          'productId': productId,
+          'quantity': quantity,
+          'dateAdded': Timestamp.now(),
+        });
+      } else {
+        int qty = int.parse(quantity) + int.parse(item.quantity);
+        await _db
+            .collection("Customer")
+            .document(customerId)
+            .collection("ShoppingCart")
+            .document(productId)
+            .updateData({
+          'quantity': qty.toString(),
+          'dateAdded': Timestamp.now(),
+        });
+      }
+      Get.snackbar("Success", "Item added to the cart");
+    } catch (e) {
+      Get.snackbar("Failed", "Item failed to add to the cart");
+      rethrow;
+    }
+  }
+
+  Future<void> incrementQuantity(String customerId, String productId) async {
+    ShoppingCartModel item = await getShoppingCartItem(productId, customerId);
+    try {
+      int qty = int.parse(item.quantity) + 1;
       await _db
           .collection("Customer")
           .document(customerId)
           .collection("ShoppingCart")
-          .add({
-        'storeId': storeId,
-        'productId': productId,
-        'quantity': quantity,
-        'dateAdded': Timestamp.now(),
+          .document(productId)
+          .updateData({
+        'quantity': qty.toString(),
       });
-      Get.snackbar("Success", "Item added to the cart");
     } catch (e) {
-      Get.snackbar("Failed", "Item failed to add to the cart");
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> decrementQuantity(String customerId, String productId) async {
+    ShoppingCartModel item = await getShoppingCartItem(productId, customerId);
+    try {
+      int qty = int.parse(item.quantity) - 1;
+      await _db
+          .collection("Customer")
+          .document(customerId)
+          .collection("ShoppingCart")
+          .document(productId)
+          .updateData({
+        'quantity': qty.toString(),
+      });
+    } catch (e) {
+      print(e);
       rethrow;
     }
   }
