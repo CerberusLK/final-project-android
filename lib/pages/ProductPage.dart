@@ -170,7 +170,8 @@ class _ProductPageState extends State<ProductPage> {
                                   _authController.user.uid,
                                   storeId,
                                   productId,
-                                  counter.toString());
+                                  counter.toString(),
+                                  price);
                             }, //Todo: Add item to cart
                             child: Row(
                               children: [

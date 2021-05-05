@@ -35,69 +35,118 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
                           shoppingCartController.shoppingList[index].productId),
                       builder: (context, productModel) {
                         if (productModel.hasData) {
-                          int _total = int.parse(productModel.data.price) *
+                          int _total = int.parse(shoppingCartController
+                                  .shoppingList[index].price) *
                               int.parse(shoppingCartController
                                   .shoppingList[index].quantity);
                           total = total + _total;
-                          return Card(
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 100,
-                                  width: 100,
-                                  child: Image.memory(Base64Codec()
-                                      .decode(productModel.data.imgString)),
-                                ),
-                                Container(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(productModel.data.productName),
-                                      Text(productModel.data.brandName),
-                                      Text("Item Price: " +
-                                          "Rs." +
-                                          productModel.data.price +
-                                          ".00"),
-                                      // Text(
-                                      //   "Total : " +
-                                      //       "Rs." +
-                                      //       total.toString() +
-                                      //       ".00",
-                                      //   style: TextStyle(
-                                      //       fontWeight: FontWeight.bold),
-                                      // ),
-                                      Row(
-                                        children: [
-                                          IconButton(
-                                              icon: Icon(Icons.remove),
-                                              onPressed: () {
-                                                FirestoreServices()
-                                                    .decrementQuantity(
-                                                        _authController
-                                                            .user.uid,
-                                                        shoppingCartController
-                                                            .shoppingList[index]
-                                                            .productId);
-                                              }),
-                                          Text(shoppingCartController
-                                              .shoppingList[index].quantity),
-                                          IconButton(
-                                              icon: Icon(Icons.add),
-                                              onPressed: () {
-                                                FirestoreServices()
-                                                    .incrementQuantity(
-                                                        _authController
-                                                            .user.uid,
-                                                        shoppingCartController
-                                                            .shoppingList[index]
-                                                            .productId);
-                                              }),
-                                        ],
-                                      )
-                                    ],
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                            child: Card(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    height: 130,
+                                    width: 130,
+                                    child: Image.memory(Base64Codec()
+                                        .decode(productModel.data.imgString)),
                                   ),
-                                ),
-                              ],
+                                  Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Container(
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 4, 0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  productModel.data.productName,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                  ),
+                                                ),
+                                                Text(productModel
+                                                    .data.brandName),
+                                                Text(
+                                                  "Item Price: " +
+                                                      "Rs." +
+                                                      productModel.data.price +
+                                                      ".00",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        // Text(
+                                        //   "Total : " +
+                                        //       "Rs." +
+                                        //       total.toString() +
+                                        //       ".00",
+                                        //   style: TextStyle(
+                                        //       fontWeight: FontWeight.bold),
+                                        // ),
+                                        Row(
+                                          children: [
+                                            IconButton(
+                                                icon: Icon(Icons.remove),
+                                                onPressed: () {
+                                                  FirestoreServices()
+                                                      .decrementQuantity(
+                                                          _authController
+                                                              .user.uid,
+                                                          shoppingCartController
+                                                              .shoppingList[
+                                                                  index]
+                                                              .productId);
+                                                }),
+                                            Text(
+                                              shoppingCartController
+                                                  .shoppingList[index].quantity,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            IconButton(
+                                                icon: Icon(Icons.add),
+                                                onPressed: () {
+                                                  FirestoreServices()
+                                                      .incrementQuantity(
+                                                          _authController
+                                                              .user.uid,
+                                                          shoppingCartController
+                                                              .shoppingList[
+                                                                  index]
+                                                              .productId);
+                                                }),
+                                          ],
+                                        ),
+                                        IconButton(
+                                            color: Colors.red,
+                                            icon: Icon(Icons.delete),
+                                            onPressed: () {
+                                              FirestoreServices()
+                                                  .deleteItemFromShoppingCart(
+                                                      _authController.user.uid,
+                                                      shoppingCartController
+                                                          .shoppingList[index]
+                                                          .productId);
+                                            }), //Todo: Delete item
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         } else {
@@ -110,7 +159,7 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
           BottomAppBar(
             child: Row(
               children: [
-                Obx(() => Text(shoppingCartController.total.toString())),
+                Text(total.toString()),
               ],
             ),
           )

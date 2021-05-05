@@ -106,7 +106,7 @@ class FirestoreServices extends GetxController {
   }
 
   Future<void> addToShoppingCart(String customerId, String storeId,
-      String productId, String quantity) async {
+      String productId, String quantity, String price) async {
     ShoppingCartModel item = await getShoppingCartItem(productId, customerId);
     try {
       if (item == null) {
@@ -120,6 +120,7 @@ class FirestoreServices extends GetxController {
           'productId': productId,
           'quantity': quantity,
           'dateAdded': Timestamp.now(),
+          'price': price,
         });
       } else {
         int qty = int.parse(quantity) + int.parse(item.quantity);
@@ -144,14 +145,18 @@ class FirestoreServices extends GetxController {
     ShoppingCartModel item = await getShoppingCartItem(productId, customerId);
     try {
       int qty = int.parse(item.quantity) + 1;
-      await _db
-          .collection("Customer")
-          .document(customerId)
-          .collection("ShoppingCart")
-          .document(productId)
-          .updateData({
-        'quantity': qty.toString(),
-      });
+      if (qty == 21) {
+        Get.snackbar("Error", "You might need to contact the Seller");
+      } else {
+        await _db
+            .collection("Customer")
+            .document(customerId)
+            .collection("ShoppingCart")
+            .document(productId)
+            .updateData({
+          'quantity': qty.toString(),
+        });
+      }
     } catch (e) {
       print(e);
       rethrow;
@@ -162,18 +167,33 @@ class FirestoreServices extends GetxController {
     ShoppingCartModel item = await getShoppingCartItem(productId, customerId);
     try {
       int qty = int.parse(item.quantity) - 1;
-      await _db
-          .collection("Customer")
-          .document(customerId)
-          .collection("ShoppingCart")
-          .document(productId)
-          .updateData({
-        'quantity': qty.toString(),
-      });
+      if (qty == 0) {
+        Get.snackbar("Error", "Quantity cannot be 0");
+      } else {
+        await _db
+            .collection("Customer")
+            .document(customerId)
+            .collection("ShoppingCart")
+            .document(productId)
+            .updateData({
+          'quantity': qty.toString(),
+        });
+      }
     } catch (e) {
       print(e);
       rethrow;
     }
+  }
+
+  Future<void> deleteItemFromShoppingCart(
+      String customerId, String productId) async {
+    await _db
+        .collection("Customer")
+        .document(customerId)
+        .collection("ShoppingCart")
+        .document(productId)
+        .delete();
+    Get.snackbar("Success", "Item removed from shopping cart");
   }
 
 // Future<List<ProductModel>> getProducts() async {

@@ -5,12 +5,14 @@ class ShoppingCartModel {
   Timestamp dataAdded;
   String productId;
   String quantity;
+  String price;
 
   ShoppingCartModel({
     this.dataAdded,
     this.productId,
     this.quantity,
     this.storeId,
+    this.price,
   });
 
   ShoppingCartModel.fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
@@ -18,5 +20,6 @@ class ShoppingCartModel {
     dataAdded = documentSnapshot.data["dataAdded"];
     productId = documentSnapshot.data["productId"];
     quantity = documentSnapshot.data["quantity"];
+    price = documentSnapshot.data["price"];
   }
 }
