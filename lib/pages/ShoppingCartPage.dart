@@ -5,12 +5,16 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/ShoppingCartController.dart';
+import 'package:safeshopping/controllers/ShoppingCartTotalController.dart';
 import 'package:safeshopping/models/Product.dart';
+import 'package:safeshopping/models/ShoppingCartTotal.dart';
 import 'package:safeshopping/services/FirestoreServices.dart';
 
 class ShoppingCartPage extends GetWidget<ShoppingCartController> {
   ShoppingCartController shoppingCartController =
       Get.put(ShoppingCartController());
+  SHoppingCartTotalController totalController =
+      Get.put(SHoppingCartTotalController());
   AuthController _authController = Get.find<AuthController>();
 
   @override
@@ -23,6 +27,11 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
       ),
       body: Column(
         children: [
+          Row(
+            children: [
+              Obx(() => Text(totalController.total.toString())),
+            ],
+          ),
           Expanded(
             child: Obx(() => StaggeredGridView.countBuilder(
                 crossAxisCount: 1,
@@ -103,12 +112,13 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
                                                 onPressed: () {
                                                   FirestoreServices()
                                                       .decrementQuantity(
-                                                          _authController
-                                                              .user.uid,
-                                                          shoppingCartController
-                                                              .shoppingList[
-                                                                  index]
-                                                              .productId);
+                                                    _authController.user.uid,
+                                                    shoppingCartController
+                                                        .shoppingList[index]
+                                                        .productId,
+                                                    int.parse(productModel
+                                                        .data.price),
+                                                  );
                                                 }),
                                             Text(
                                               shoppingCartController
@@ -122,12 +132,13 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
                                                 onPressed: () {
                                                   FirestoreServices()
                                                       .incrementQuantity(
-                                                          _authController
-                                                              .user.uid,
-                                                          shoppingCartController
-                                                              .shoppingList[
-                                                                  index]
-                                                              .productId);
+                                                    _authController.user.uid,
+                                                    shoppingCartController
+                                                        .shoppingList[index]
+                                                        .productId,
+                                                    int.parse(productModel
+                                                        .data.price),
+                                                  );
                                                 }),
                                           ],
                                         ),
@@ -140,7 +151,14 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
                                                       _authController.user.uid,
                                                       shoppingCartController
                                                           .shoppingList[index]
-                                                          .productId);
+                                                          .productId,
+                                                      int.parse(
+                                                          shoppingCartController
+                                                              .shoppingList[
+                                                                  index]
+                                                              .quantity),
+                                                      int.parse(productModel
+                                                          .data.price));
                                             }), //Todo: Delete item
                                       ],
                                     ),
@@ -156,13 +174,6 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
                 },
                 staggeredTileBuilder: (index) => StaggeredTile.fit(1))),
           ),
-          BottomAppBar(
-            child: Row(
-              children: [
-                Text(total.toString()),
-              ],
-            ),
-          )
         ],
       ),
     );

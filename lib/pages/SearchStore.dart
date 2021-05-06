@@ -11,6 +11,7 @@ import 'package:safeshopping/controllers/UserController.dart';
 import 'package:safeshopping/pages/ProductPage.dart';
 import 'package:safeshopping/pages/ShoppingCartPage.dart';
 import 'package:safeshopping/pages/UserProfilePage.dart';
+import 'package:safeshopping/services/FirestoreServices.dart';
 
 class SearchStore extends StatefulWidget {
   @override
