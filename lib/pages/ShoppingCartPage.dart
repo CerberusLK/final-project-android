@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/ShoppingCartController.dart';
 import 'package:safeshopping/controllers/ShoppingCartTotalController.dart';
+import 'package:safeshopping/controllers/UserController.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/services/FirestoreServices.dart';
 
@@ -180,7 +181,9 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               OutlineButton(
-                onPressed: () {},
+                onPressed: () {
+                  FirestoreServices().createTheOrder(_authController.user.uid);
+                },
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30)),
                 child: Row(

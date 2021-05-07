@@ -4,25 +4,34 @@ class OrderModel {
   String orderId;
   String customerId;
   String storeId;
-  Map products;
+  int unitPrice;
+  String productId;
+  int qty;
   Timestamp dateCreated;
-  String time;
   bool isCompleted;
-  bool isOrdered;
   String status; //order accepted,in review,completed
 
-  OrderModel(this.customerId, this.dateCreated, this.isCompleted, this.orderId,
-      this.status, this.storeId, this.time, this.products, this.isOrdered);
+  OrderModel(
+    this.customerId,
+    this.dateCreated,
+    this.isCompleted,
+    this.orderId,
+    this.productId,
+    this.qty,
+    this.status,
+    this.storeId,
+    this.unitPrice,
+  );
 
   OrderModel.fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
     orderId = documentSnapshot.data["orderId"];
     customerId = documentSnapshot.data["customerId"];
     storeId = documentSnapshot.data["storeId"];
-    dateCreated = documentSnapshot.data["date"];
-    time = documentSnapshot.data["time"];
+    dateCreated = documentSnapshot.data["dateCreated"];
+    qty = documentSnapshot.data["qty"];
     isCompleted = documentSnapshot.data["isCompleted"];
     status = documentSnapshot.data["status"];
-    products = documentSnapshot.data["productList"];
-    isOrdered = documentSnapshot.data["isOrdered"];
+    productId = documentSnapshot.data["productId"];
+    unitPrice = documentSnapshot.data["unitPrice"];
   }
 }

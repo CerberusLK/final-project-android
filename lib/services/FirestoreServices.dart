@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:safeshopping/controllers/ShoppingCartController.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/models/ShoppingCart.dart';
 import 'package:safeshopping/models/ShoppingCartTotal.dart';
@@ -183,6 +184,35 @@ class FirestoreServices extends GetxController {
     }
   }
 
+  Future<void> createTheOrder(String userId) async {
+    try {
+      List<ShoppingCartModel> orderItems =
+          Get.find<ShoppingCartController>().shoppingList;
+      orderItems.forEach((element) async {
+        await _db
+            .collection("Customer")
+            .document(userId)
+            .collection("OngoingOrders")
+            .add({
+          'customerId': userId,
+          'storeId': element.storeId,
+          'unitPrice': element.price,
+          'qty': element.quantity,
+          'productId': element.productId,
+          'dateCreated': Timestamp.now(),
+          'isCompleted': "false",
+          'status': 'in review',
+        });
+        Get.snackbar("Success", "Order created successfully");
+        deleteItemFromShoppingCart(userId, element.productId,
+            int.parse(element.quantity), int.parse(element.price));
+      });
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
   Future<void> incrementQuantity(
       String customerId, String productId, int price) async {
     ShoppingCartModel item = await getShoppingCartItem(productId, customerId);
@@ -250,28 +280,6 @@ class FirestoreServices extends GetxController {
     await _db.collection("Customer").document(customerId).updateData({
       'totalCartPrice': (int.parse(total.totalPrice) - (price * qty)).toString()
     });
-  }
-
-  RxInt shoppingCartStreamTest(String userId) {
-    var totPrice = 0.obs;
-    _db
-        .collection("Customer")
-        .document(userId)
-        .collection("ShoppingCart")
-        .snapshots()
-        .map((QuerySnapshot querySnapshot) {
-      List<ShoppingCartModel> retVal = List();
-      querySnapshot.documents.forEach((element) {
-        retVal.add(ShoppingCartModel.fromDocumentSnapshot(element));
-      });
-      print("shopping cart = " + retVal.length.toString());
-      retVal.forEach((element) {
-        var price = int.parse(element.price) * int.parse(element.quantity);
-        totPrice = totPrice + price;
-      });
-    });
-    print(totPrice);
-    return totPrice;
   }
 
 // Future<List<ProductModel>> getProducts() async {
