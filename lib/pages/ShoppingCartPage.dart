@@ -7,7 +7,6 @@ import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/ShoppingCartController.dart';
 import 'package:safeshopping/controllers/ShoppingCartTotalController.dart';
 import 'package:safeshopping/models/Product.dart';
-import 'package:safeshopping/models/ShoppingCartTotal.dart';
 import 'package:safeshopping/services/FirestoreServices.dart';
 
 class ShoppingCartPage extends GetWidget<ShoppingCartController> {
@@ -27,10 +26,8 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
       ),
       body: Column(
         children: [
-          Row(
-            children: [
-              Obx(() => Text(totalController.total.toString())),
-            ],
+          SizedBox(
+            height: 4,
           ),
           Expanded(
             child: Obx(() => StaggeredGridView.countBuilder(
@@ -175,6 +172,34 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
                 staggeredTileBuilder: (index) => StaggeredTile.fit(1))),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              OutlineButton(
+                onPressed: () {},
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
+                child: Row(
+                  children: [Text("Confirm Order"), Icon(Icons.done)],
+                ),
+              ),
+              Obx(() => Text(
+                    "Cart Total : " +
+                        "Rs." +
+                        totalController.total.toString() +
+                        ".00",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+            ],
+          ),
+        ),
       ),
     );
   }

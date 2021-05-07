@@ -7,11 +7,12 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/state_manager.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/ProductController.dart';
+import 'package:safeshopping/controllers/ShoppingCartController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
 import 'package:safeshopping/pages/ProductPage.dart';
 import 'package:safeshopping/pages/ShoppingCartPage.dart';
 import 'package:safeshopping/pages/UserProfilePage.dart';
-import 'package:safeshopping/services/FirestoreServices.dart';
+import 'package:safeshopping/utils/NamedIcon.dart';
 
 class SearchStore extends StatefulWidget {
   @override
@@ -22,56 +23,25 @@ class _SearchStoreState extends State<SearchStore> {
   final UserController userController = Get.put(UserController());
   final AuthController authController = AuthController();
   final ProductController productController = Get.put(ProductController());
+  final ShoppingCartController shoppingCartController =
+      Get.put(ShoppingCartController());
 
   final TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    int counter = 0;
-
-    var itemCount = 0;
-    (productController.products.length == null)
-        ? itemCount = 0
-        : itemCount = productController.products.length;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Safe Shopping"),
         actions: <Widget>[
-          new Stack(
-            children: <Widget>[
-              new IconButton(
-                  icon: const Icon(Icons.add_shopping_cart_rounded),
-                  onPressed: () {
-                    Get.to(() => ShoppingCartPage());
-                    //ToDo: Link to Cart Page
-                  }),
-              counter != 0
-                  ? new Positioned(
-                      right: 11,
-                      top: 11,
-                      child: new Container(
-                        padding: EdgeInsets.all(2),
-                        decoration: new BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        constraints: BoxConstraints(
-                          minWidth: 14,
-                          minHeight: 14,
-                        ),
-                        child: Text(
-                          '$counter',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 8,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    )
-                  : new Container()
-            ],
-          )
+          Obx(() => NamedIcon(
+                text: "Cart",
+                iconData: Icons.shopping_cart_rounded,
+                notificationCount: shoppingCartController.shoppingList.length,
+                onTap: () {
+                  Get.to(ShoppingCartPage());
+                },
+              ))
         ],
       ),
       drawer: new Drawer(
@@ -105,7 +75,6 @@ class _SearchStoreState extends State<SearchStore> {
                 ],
               ),
             ),
-            //ToDo: Current items in shopping cart needs to added
             const Divider(
               height: 20,
               thickness: 5,
