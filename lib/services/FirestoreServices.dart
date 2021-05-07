@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/controllers/ShoppingCartController.dart';
+import 'package:safeshopping/models/Order.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/models/ShoppingCart.dart';
 import 'package:safeshopping/models/ShoppingCartTotal.dart';
@@ -95,6 +96,38 @@ class FirestoreServices extends GetxController {
         retVal.add(ShoppingCartModel.fromDocumentSnapshot(element));
       });
       print("shopping cart = " + retVal.length.toString());
+      return retVal;
+    });
+  }
+
+//TODO:add controller to on going orders
+  Stream<List<OrderModel>> getOngoingOrders(String userId) {
+    return _db
+        .collection("Customer")
+        .document(userId)
+        .collection("OngoingOrders")
+        .snapshots()
+        .map((QuerySnapshot querySnapshot) {
+      List<OrderModel> retVal = List();
+      querySnapshot.documents.forEach((element) {
+        retVal.add(OrderModel.fromDocumentSnapshot(element));
+      });
+      return retVal;
+    });
+  }
+
+//TODO:add controller to completed orders
+  Stream<List<OrderModel>> getCompletedOrders(String userId) {
+    return _db
+        .collection("Customer")
+        .document(userId)
+        .collection("CompletedOrders")
+        .snapshots()
+        .map((QuerySnapshot querySnapshot) {
+      List<OrderModel> retVal = List();
+      querySnapshot.documents.forEach((element) {
+        retVal.add(OrderModel.fromDocumentSnapshot(element));
+      });
       return retVal;
     });
   }
@@ -204,6 +237,7 @@ class FirestoreServices extends GetxController {
           'status': 'in review',
         });
         Get.snackbar("Success", "Order created successfully");
+        //TODO:add method to add order to store
         deleteItemFromShoppingCart(userId, element.productId,
             int.parse(element.quantity), int.parse(element.price));
       });
