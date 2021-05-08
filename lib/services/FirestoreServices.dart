@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:safeshopping/controllers/CompletedOrderController.dart';
 import 'package:safeshopping/controllers/ShoppingCartController.dart';
+import 'package:safeshopping/models/CheckOutTotal.dart';
 import 'package:safeshopping/models/Order.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/models/ShoppingCart.dart';
 import 'package:safeshopping/models/ShoppingCartTotal.dart';
 import 'package:safeshopping/models/User.dart';
+import 'package:safeshopping/utils/Scanner.dart';
 
 class FirestoreServices extends GetxController {
   Firestore _db = Firestore.instance;
@@ -22,6 +25,7 @@ class FirestoreServices extends GetxController {
         "name": user.name,
         "email": user.email,
         "totalCartPrice": "0",
+        "totalCheckout": "0",
       });
       return true;
     } catch (e) {
@@ -84,6 +88,18 @@ class FirestoreServices extends GetxController {
     });
   }
 
+  Stream<int> checkOutTotalStream(String customerId) {
+    return _db
+        .collection("Customer")
+        .document(customerId)
+        .snapshots()
+        .map((DocumentSnapshot documentSnapshot) {
+      int retVal = int.parse(documentSnapshot.data["totalCheckout"]);
+      print("checkout total = " + retVal.toString());
+      return retVal;
+    });
+  }
+
   Stream<List<ShoppingCartModel>> shoppingCartStream(String userId) {
     return _db
         .collection("Customer")
@@ -100,7 +116,6 @@ class FirestoreServices extends GetxController {
     });
   }
 
-//TODO:add controller to on going orders
   Stream<List<OrderModel>> getOngoingOrders(String userId) {
     return _db
         .collection("Customer")
@@ -117,7 +132,6 @@ class FirestoreServices extends GetxController {
     });
   }
 
-//TODO:add controller to completed orders
   Stream<List<OrderModel>> getCompletedOrders(String userId) {
     return _db
         .collection("Customer")
@@ -161,6 +175,22 @@ class FirestoreServices extends GetxController {
       if (doc.exists) {
         ShoppingCartTotalModel _total =
             ShoppingCartTotalModel.fromDocumentSnapshot(doc);
+        return _total;
+      } else
+        return null;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<CheckOutTotalModel> getCheckOutTotal(String customerId) async {
+    try {
+      DocumentSnapshot doc =
+          await _db.collection("Customer").document(customerId).get();
+      if (doc.exists) {
+        CheckOutTotalModel _total =
+            CheckOutTotalModel.fromDocumentSnapshot(doc);
         return _total;
       } else
         return null;
@@ -325,6 +355,55 @@ class FirestoreServices extends GetxController {
         .document(orderId)
         .delete();
     Get.snackbar("Success", "Order removed successfully");
+  }
+
+  Future<void> collectOrderFromStore() async {
+    try {
+      int total = 0;
+      String storeId = await Scanner().scanQrCode();
+      List<OrderModel> orderList =
+          Get.find<CompletedOrderController>().orderList;
+      orderList.forEach((element) async {
+        if (element.storeId == storeId) {
+          _db
+              .collection("Stores")
+              .document(storeId)
+              .collection("AwaitingOrders")
+              .document(element.orderId)
+              .setData({
+            "productId": element.productId,
+            "quantity": element.qty,
+            "customerId": element.customerId,
+            "dateCreated": element.dateCreated,
+          });
+          _db
+              .collection("Customer")
+              .document(element.customerId)
+              .collection("CheckoutOrders")
+              .document(element.orderId)
+              .setData({
+            "productId": element.productId,
+            "quantity": element.qty,
+            "customerId": element.customerId,
+            "dateCreated": element.dateCreated,
+          });
+          total += element.qty * element.unitPrice;
+          CheckOutTotalModel checkOutTotalModel =
+              await getCheckOutTotal(element.customerId);
+          await _db
+              .collection("Customer")
+              .document(element.customerId)
+              .updateData({
+            "totalCheckout":
+                (int.parse(checkOutTotalModel.totalCheckout) + total)
+                    .toString(),
+          });
+        }
+      });
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
 // Future<List<ProductModel>> getProducts() async {

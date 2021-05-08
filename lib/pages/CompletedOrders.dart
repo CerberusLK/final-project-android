@@ -7,6 +7,7 @@ import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/CompletedOrderController.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/services/FirestoreServices.dart';
+import 'package:safeshopping/utils/Scanner.dart';
 
 class CompletedOrderPage extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class CompletedOrderPage extends StatefulWidget {
 }
 
 class _CompletedOrderPageState extends State<CompletedOrderPage> {
+  RxString qrText = "sdgsd".obs;
   final CompletedOrderController orders = Get.put(CompletedOrderController());
   final AuthController _auth = Get.find<AuthController>();
   @override
@@ -23,6 +25,21 @@ class _CompletedOrderPageState extends State<CompletedOrderPage> {
         title: Text("Completed Orders"),
         centerTitle: true,
         elevation: 20,
+      ),
+      drawer: new Drawer(
+        child: ListView(
+          children: [
+            RaisedButton.icon(
+              onPressed: () {
+                FirestoreServices().collectOrderFromStore();
+              },
+              label: Text("Collect The Orders"),
+              icon: Icon(
+                Icons.qr_code_rounded,
+              ),
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -51,6 +68,21 @@ class _CompletedOrderPageState extends State<CompletedOrderPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        IconButton(
+                                            color: Colors.red,
+                                            icon: Icon(Icons.delete),
+                                            onPressed: () {
+                                              FirestoreServices()
+                                                  .deleteCompletedOrder(
+                                                      _auth.user.uid,
+                                                      orders.orderList[index]
+                                                          .orderId);
+                                            })
+                                      ],
+                                    ),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -88,21 +120,6 @@ class _CompletedOrderPageState extends State<CompletedOrderPage> {
                                                     .toString()),
                                           ],
                                         ),
-                                        Column(
-                                          children: [
-                                            IconButton(
-                                                color: Colors.red,
-                                                icon: Icon(Icons.delete),
-                                                onPressed: () {
-                                                  FirestoreServices()
-                                                      .deleteCompletedOrder(
-                                                          _auth.user.uid,
-                                                          orders
-                                                              .orderList[index]
-                                                              .orderId);
-                                                })
-                                          ],
-                                        ),
                                       ],
                                     ),
                                     Row(
@@ -122,6 +139,26 @@ class _CompletedOrderPageState extends State<CompletedOrderPage> {
                                           children: [
                                             Text(
                                                 orders.orderList[index].status),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Text(
+                                              "Store Name:",
+                                              style: TextStyle(
+                                                  color: Colors.blueGrey[300]),
+                                            )
+                                          ],
+                                        ),
+                                        Column(
+                                          children: [
+                                            Text("Set the store name"),
                                           ],
                                         ),
                                       ],
