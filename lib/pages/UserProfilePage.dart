@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
+import 'package:safeshopping/controllers/CompletedOrderController.dart';
 import 'package:safeshopping/controllers/OnGoingOrderController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
 import 'package:safeshopping/pages/CompletedOrders.dart';
@@ -30,6 +31,8 @@ class _ProfileState extends State<Profile> {
     UserController _userController = Get.put(UserController());
     AuthController _authController = Get.put(AuthController());
     OnGoingOrderController _onGoingOrders = Get.put(OnGoingOrderController());
+    CompletedOrderController _completedOrderController =
+        Get.put(CompletedOrderController());
 
     bool enabled = true;
 
@@ -86,7 +89,9 @@ class _ProfileState extends State<Profile> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Text("2"),
+                                Obx(() => Text(_completedOrderController
+                                    .orderList.length
+                                    .toString())),
                               ],
                             ),
                           ),

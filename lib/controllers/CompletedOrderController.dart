@@ -6,7 +6,7 @@ import 'AuthController.dart';
 
 class CompletedOrderController extends GetxController {
   Rx<List<OrderModel>> _completedOrderList = Rx<List<OrderModel>>();
-  List<OrderModel> get completedOrderList => _completedOrderList.value;
+  List<OrderModel> get orderList => _completedOrderList.value;
 
   @override
   void onInit() {

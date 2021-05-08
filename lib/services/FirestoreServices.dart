@@ -317,6 +317,16 @@ class FirestoreServices extends GetxController {
     });
   }
 
+  Future<void> deleteCompletedOrder(String userId, String orderId) async {
+    await _db
+        .collection("Customer")
+        .document(userId)
+        .collection("CompletedOrders")
+        .document(orderId)
+        .delete();
+    Get.snackbar("Success", "Order removed successfully");
+  }
+
 // Future<List<ProductModel>> getProducts() async {
 //   QuerySnapshot querySnapshot =
 //       await _db.collection("Products").getDocuments();
