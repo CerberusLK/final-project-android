@@ -9,13 +9,6 @@ class ShoppingCartController extends GetxController {
 
   List<ShoppingCartModel> get shoppingList => _shoppingCart.value;
 
-  void calTot() {
-    shoppingList.forEach((element) {
-      var _total = int.parse(element.price) * int.parse(element.quantity);
-      total = total + _total;
-    });
-  }
-
   @override
   void onInit() {
     String userId = Get.find<AuthController>().user.uid;

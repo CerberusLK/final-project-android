@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/ShoppingCartController.dart';
 import 'package:safeshopping/controllers/ShoppingCartTotalController.dart';
-import 'package:safeshopping/controllers/UserController.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/services/FirestoreServices.dart';
 
@@ -42,11 +41,6 @@ class ShoppingCartPage extends GetWidget<ShoppingCartController> {
                           shoppingCartController.shoppingList[index].productId),
                       builder: (context, productModel) {
                         if (productModel.hasData) {
-                          int _total = int.parse(shoppingCartController
-                                  .shoppingList[index].price) *
-                              int.parse(shoppingCartController
-                                  .shoppingList[index].quantity);
-                          total = total + _total;
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
                             child: Card(

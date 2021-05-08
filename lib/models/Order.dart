@@ -28,10 +28,11 @@ class OrderModel {
     customerId = documentSnapshot.data["customerId"];
     storeId = documentSnapshot.data["storeId"];
     dateCreated = documentSnapshot.data["dateCreated"];
-    qty = documentSnapshot.data["qty"];
-    isCompleted = documentSnapshot.data["isCompleted"];
+    qty = int.parse(documentSnapshot.data["qty"]);
+    isCompleted = bool.fromEnvironment(
+        documentSnapshot.data["isCompleted"].toLowerCase());
     status = documentSnapshot.data["status"];
     productId = documentSnapshot.data["productId"];
-    unitPrice = documentSnapshot.data["unitPrice"];
+    unitPrice = int.parse(documentSnapshot.data["unitPrice"]);
   }
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
+import 'package:safeshopping/controllers/OnGoingOrderController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
+import 'package:safeshopping/pages/CompletedOrders.dart';
+import 'package:safeshopping/pages/OnGoingOrders.dart';
 
 void main() {
   runApp(GetMaterialApp(
@@ -26,6 +29,7 @@ class _ProfileState extends State<Profile> {
 
     UserController _userController = Get.put(UserController());
     AuthController _authController = Get.put(AuthController());
+    OnGoingOrderController _onGoingOrders = Get.put(OnGoingOrderController());
 
     bool enabled = true;
 
@@ -70,29 +74,40 @@ class _ProfileState extends State<Profile> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Container(
-                          child: Column(
-                            children: [
-                              Icon(Icons.done),
-                              Text("Completed"),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text("2"),
-                            ],
+                        InkWell(
+                          onTap: () {
+                            Get.to(() => CompletedOrderPage());
+                          },
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Icon(Icons.done),
+                                Text("Completed"),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text("2"),
+                              ],
+                            ),
                           ),
                         ),
                         VerticalDivider(),
-                        Container(
-                          child: Column(
-                            children: [
-                              Icon(Icons.local_shipping_outlined),
-                              Text("To be Collected"),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text("2"),
-                            ],
+                        InkWell(
+                          onTap: () {
+                            Get.to(() => OnGoingOrdersPage());
+                          },
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Icon(Icons.local_shipping_outlined),
+                                Text("To be Collected"),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Obx(() => Text(_onGoingOrders.orderList.length
+                                    .toString())),
+                              ],
+                            ),
                           ),
                         ),
                       ],

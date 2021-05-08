@@ -112,6 +112,7 @@ class FirestoreServices extends GetxController {
       querySnapshot.documents.forEach((element) {
         retVal.add(OrderModel.fromDocumentSnapshot(element));
       });
+      print("Ongoing order num = " + retVal.length.toString());
       return retVal;
     });
   }
