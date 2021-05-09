@@ -20,5 +20,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-//TODO: get customer checkout orders and show them on completed orders
-//TODO: get checkout total and display them and once done clear it along with customer -> checkoutOrders
+//TODO: delete completed corders on checkout
+//TODO: implement the product search
+//TODO: implement the local notification when order status changed to complete
+//TODO: add a rating system
