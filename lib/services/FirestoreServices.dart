@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:safeshopping/controllers/CheckoutOrderController.dart';
 import 'package:safeshopping/controllers/CompletedOrderController.dart';
 import 'package:safeshopping/controllers/ShoppingCartController.dart';
 import 'package:safeshopping/models/CheckOutTotal.dart';
+import 'package:safeshopping/models/CheckoutOrder.dart';
 import 'package:safeshopping/models/Order.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/models/ShoppingCart.dart';
@@ -128,6 +130,21 @@ class FirestoreServices extends GetxController {
         retVal.add(OrderModel.fromDocumentSnapshot(element));
       });
       print("Ongoing order num = " + retVal.length.toString());
+      return retVal;
+    });
+  }
+
+  Stream<List<CheckoutOrderModel>> getCheckoutOrders(String customerId) {
+    return _db
+        .collection("Customer")
+        .document(customerId)
+        .collection("CheckoutOrders")
+        .snapshots()
+        .map((QuerySnapshot querySnapshot) {
+      List<CheckoutOrderModel> retVal = List();
+      querySnapshot.documents.forEach((element) {
+        retVal.add(CheckoutOrderModel.fromDocumentSnapshot(element));
+      });
       return retVal;
     });
   }
@@ -347,6 +364,29 @@ class FirestoreServices extends GetxController {
     });
   }
 
+  Future<void> completeTheCheckout(String customerId) async {
+    List<String> list = List();
+    QuerySnapshot query = await _db
+        .collection("Customer")
+        .document(customerId)
+        .collection("CheckoutOrders")
+        .getDocuments();
+    query.documents.forEach((element) {
+      list.add(element.documentID);
+    });
+    list.forEach((element) {
+      _db
+          .collection("Customer")
+          .document(customerId)
+          .collection("CheckoutOrders")
+          .document(element)
+          .delete();
+    });
+    await _db.collection("Customer").document(customerId).updateData({
+      "totalCheckout": "0",
+    });
+  }
+
   Future<void> deleteCompletedOrder(String userId, String orderId) async {
     await _db
         .collection("Customer")
@@ -364,6 +404,7 @@ class FirestoreServices extends GetxController {
       List<OrderModel> orderList =
           Get.find<CompletedOrderController>().orderList;
       orderList.forEach((element) async {
+        ProductModel product = await getProduct(element.productId);
         if (element.storeId == storeId) {
           _db
               .collection("Stores")
@@ -386,6 +427,9 @@ class FirestoreServices extends GetxController {
             "quantity": element.qty,
             "customerId": element.customerId,
             "dateCreated": element.dateCreated,
+            "productName": product.productName,
+            "productBrand": product.brandName,
+            "unitPrice": element.unitPrice,
           });
           total += element.qty * element.unitPrice;
           CheckOutTotalModel checkOutTotalModel =

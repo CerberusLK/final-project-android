@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
+import 'package:safeshopping/controllers/CheckOutTotalController.dart';
+import 'package:safeshopping/controllers/CheckoutOrderController.dart';
 import 'package:safeshopping/controllers/CompletedOrderController.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/services/FirestoreServices.dart';
-import 'package:safeshopping/utils/Scanner.dart';
 
 class CompletedOrderPage extends StatefulWidget {
   @override
@@ -18,6 +19,9 @@ class _CompletedOrderPageState extends State<CompletedOrderPage> {
   RxString qrText = "sdgsd".obs;
   final CompletedOrderController orders = Get.put(CompletedOrderController());
   final AuthController _auth = Get.find<AuthController>();
+  final CheckoutOrderController checkoutOrders =
+      Get.put(CheckoutOrderController());
+  final CheckOutTotalController total = Get.put(CheckOutTotalController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,15 +31,109 @@ class _CompletedOrderPageState extends State<CompletedOrderPage> {
         elevation: 20,
       ),
       drawer: new Drawer(
-        child: ListView(
+        child: Column(
           children: [
+            SizedBox(
+              height: 30,
+            ),
             RaisedButton.icon(
               onPressed: () {
                 FirestoreServices().collectOrderFromStore();
               },
-              label: Text("Collect The Orders"),
+              label: Text("Scan QR code to Collect The Orders"),
               icon: Icon(
                 Icons.qr_code_rounded,
+              ),
+            ),
+            SizedBox(
+              height: 18,
+            ),
+            Text(
+              "You can collect the following Items",
+              style: TextStyle(color: Colors.blue[300]),
+            ),
+            Expanded(
+              child: Obx(
+                () => StaggeredGridView.countBuilder(
+                  crossAxisCount: 1,
+                  itemCount: checkoutOrders.checkoutOrderList.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Card(
+                        elevation: 11,
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    checkoutOrders
+                                        .checkoutOrderList[index].productName,
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(checkoutOrders
+                                      .checkoutOrderList[index].brandName)
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    "Rs." +
+                                        checkoutOrders
+                                            .checkoutOrderList[index].unitPrice
+                                            .toString() +
+                                        ".00" +
+                                        "  X  " +
+                                        checkoutOrders
+                                            .checkoutOrderList[index].qty
+                                            .toString(),
+                                    style: TextStyle(color: Colors.red),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+                ),
+              ),
+            ),
+            BottomAppBar(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  RaisedButton(
+                    color: Colors.amber,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(11)),
+                    onPressed: () {
+                      FirestoreServices().completeTheCheckout(_auth.user.uid);
+                    },
+                    child: Row(
+                      children: [
+                        Column(
+                          children: [Text("Complete Checkout")],
+                        ),
+                        Column(
+                          children: [
+                            Obx(() => Text("  Rs." +
+                                total.checkOutTotal.toString() +
+                                ".00"))
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
               ),
             ),
           ],
