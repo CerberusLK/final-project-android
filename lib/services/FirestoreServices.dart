@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:safeshopping/controllers/CheckoutOrderController.dart';
 import 'package:safeshopping/controllers/CompletedOrderController.dart';
 import 'package:safeshopping/controllers/ShoppingCartController.dart';
 import 'package:safeshopping/models/CheckOutTotal.dart';
@@ -10,10 +9,13 @@ import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/models/ShoppingCart.dart';
 import 'package:safeshopping/models/ShoppingCartTotal.dart';
 import 'package:safeshopping/models/User.dart';
+import 'package:safeshopping/models/store.dart';
 import 'package:safeshopping/utils/Scanner.dart';
+import 'package:uuid/uuid.dart';
 
 class FirestoreServices extends GetxController {
   Firestore _db = Firestore.instance;
+  var uuid = Uuid();
 
   Future getData(String collection) async {
     QuerySnapshot snapshot =
@@ -118,11 +120,11 @@ class FirestoreServices extends GetxController {
     });
   }
 
-  Stream<List<OrderModel>> getOngoingOrders(String userId) {
+  Stream<List<OrderModel>> getReadyToCollectOrders(String userId) {
     return _db
         .collection("Customer")
         .document(userId)
-        .collection("OngoingOrders")
+        .collection("ReadyToCollect")
         .snapshots()
         .map((QuerySnapshot querySnapshot) {
       List<OrderModel> retVal = List();
@@ -149,11 +151,39 @@ class FirestoreServices extends GetxController {
     });
   }
 
+  Stream<List<StoreModel>> getStrores() {
+    return _db
+        .collection("Stores")
+        .snapshots()
+        .map((QuerySnapshot querySnapshot) {
+      List<StoreModel> retVal = List();
+      querySnapshot.documents.forEach((element) {
+        retVal.add(StoreModel.fromDocumentSnapshot(element));
+      });
+      return retVal;
+    });
+  }
+
   Stream<List<OrderModel>> getCompletedOrders(String userId) {
     return _db
         .collection("Customer")
         .document(userId)
         .collection("CompletedOrders")
+        .snapshots()
+        .map((QuerySnapshot querySnapshot) {
+      List<OrderModel> retVal = List();
+      querySnapshot.documents.forEach((element) {
+        retVal.add(OrderModel.fromDocumentSnapshot(element));
+      });
+      return retVal;
+    });
+  }
+
+  Stream<List<OrderModel>> getOnGoingOrders(String userId) {
+    return _db
+        .collection("Customer")
+        .document(userId)
+        .collection("OngoingOrders")
         .snapshots()
         .map((QuerySnapshot querySnapshot) {
       List<OrderModel> retVal = List();
@@ -267,6 +297,7 @@ class FirestoreServices extends GetxController {
 
   Future<void> createTheOrder(String userId) async {
     try {
+      String orderId = uuid.v1();
       List<ShoppingCartModel> orderItems =
           Get.find<ShoppingCartController>().shoppingList;
       orderItems.forEach((element) async {
@@ -274,7 +305,23 @@ class FirestoreServices extends GetxController {
             .collection("Customer")
             .document(userId)
             .collection("OngoingOrders")
-            .add({
+            .document(orderId)
+            .setData({
+          'customerId': userId,
+          'storeId': element.storeId,
+          'unitPrice': element.price,
+          'qty': element.quantity,
+          'productId': element.productId,
+          'dateCreated': Timestamp.now(),
+          'isCompleted': "false",
+          'status': 'in review',
+        });
+        await _db
+            .collection("Stores")
+            .document(element.storeId)
+            .collection("OngoingOrders")
+            .document(orderId)
+            .setData({
           'customerId': userId,
           'storeId': element.storeId,
           'unitPrice': element.price,

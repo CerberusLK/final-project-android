@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/CompletedOrderController.dart';
-import 'package:safeshopping/controllers/OnGoingOrderController.dart';
+import 'package:safeshopping/controllers/ReadyToCollectOrderController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
 import 'package:safeshopping/pages/CompletedOrders.dart';
 import 'package:safeshopping/pages/OnGoingOrders.dart';
+import 'package:safeshopping/pages/ReadyToCollectOrders.dart';
 
 void main() {
   runApp(GetMaterialApp(
@@ -30,7 +31,8 @@ class _ProfileState extends State<Profile> {
 
     UserController _userController = Get.put(UserController());
     AuthController _authController = Get.put(AuthController());
-    OnGoingOrderController _onGoingOrders = Get.put(OnGoingOrderController());
+    ReadyToCollectOrderController _onGoingOrders =
+        Get.put(ReadyToCollectOrderController());
     CompletedOrderController _completedOrderController =
         Get.put(CompletedOrderController());
 
@@ -79,6 +81,44 @@ class _ProfileState extends State<Profile> {
                       children: [
                         InkWell(
                           onTap: () {
+                            Get.to(() => OnGoingOrdersPage());
+                          },
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Icon(Icons.hourglass_top_rounded),
+                                Text("Awaiting Orders"),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Obx(() => Text(_onGoingOrders.orderList.length
+                                    .toString())),
+                              ],
+                            ),
+                          ),
+                        ),
+                        VerticalDivider(),
+                        InkWell(
+                          onTap: () {
+                            Get.to(() => ReadyToCollectOrdersPage());
+                          },
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Icon(Icons.local_shipping_outlined),
+                                Text("Ready to Collect"),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Obx(() => Text(_onGoingOrders.orderList.length
+                                    .toString())),
+                              ],
+                            ),
+                          ),
+                        ),
+                        VerticalDivider(),
+                        InkWell(
+                          onTap: () {
                             Get.to(() => CompletedOrderPage());
                           },
                           child: Container(
@@ -91,25 +131,6 @@ class _ProfileState extends State<Profile> {
                                 ),
                                 Obx(() => Text(_completedOrderController
                                     .orderList.length
-                                    .toString())),
-                              ],
-                            ),
-                          ),
-                        ),
-                        VerticalDivider(),
-                        InkWell(
-                          onTap: () {
-                            Get.to(() => OnGoingOrdersPage());
-                          },
-                          child: Container(
-                            child: Column(
-                              children: [
-                                Icon(Icons.local_shipping_outlined),
-                                Text("To be Collected"),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Obx(() => Text(_onGoingOrders.orderList.length
                                     .toString())),
                               ],
                             ),

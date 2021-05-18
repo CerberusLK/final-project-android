@@ -4,7 +4,7 @@ import 'package:safeshopping/services/FirestoreServices.dart';
 
 import 'AuthController.dart';
 
-class OnGoingOrderController extends GetxController {
+class ReadyToCollectOrderController extends GetxController {
   Rx<List<OrderModel>> _onGoingOrderList = Rx<List<OrderModel>>();
   List<OrderModel> get orderList => _onGoingOrderList.value;
 
@@ -12,6 +12,7 @@ class OnGoingOrderController extends GetxController {
   void onInit() {
     super.onInit();
     String userId = Get.find<AuthController>().user.uid;
-    _onGoingOrderList.bindStream(FirestoreServices().getOnGoingOrders(userId));
+    _onGoingOrderList
+        .bindStream(FirestoreServices().getReadyToCollectOrders(userId));
   }
 }

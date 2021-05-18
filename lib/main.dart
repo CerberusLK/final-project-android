@@ -24,3 +24,6 @@ class MyApp extends StatelessWidget {
 //TODO: implement the product search
 //TODO: implement the local notification when order status changed to complete
 //TODO: add a rating system
+
+
+//TODO: add a cusstomer order details

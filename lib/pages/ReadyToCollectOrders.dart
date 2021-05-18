@@ -3,17 +3,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
-import 'package:safeshopping/controllers/OnGoingOrderController.dart';
+import 'package:safeshopping/controllers/ReadyToCollectOrderController.dart';
 import 'package:safeshopping/models/Product.dart';
 import 'package:safeshopping/services/FirestoreServices.dart';
 
-class OnGoingOrdersPage extends StatefulWidget {
+class ReadyToCollectOrdersPage extends StatefulWidget {
   @override
-  _OnGoingOrdersPageState createState() => _OnGoingOrdersPageState();
+  _ReadyToCollectOrdersPageState createState() =>
+      _ReadyToCollectOrdersPageState();
 }
 
-class _OnGoingOrdersPageState extends State<OnGoingOrdersPage> {
-  final OnGoingOrderController orders = Get.put(OnGoingOrderController());
+class _ReadyToCollectOrdersPageState extends State<ReadyToCollectOrdersPage> {
+  final ReadyToCollectOrderController orders =
+      Get.put(ReadyToCollectOrderController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
