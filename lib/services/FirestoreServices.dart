@@ -6,6 +6,7 @@ import 'package:safeshopping/models/CheckOutTotal.dart';
 import 'package:safeshopping/models/CheckoutOrder.dart';
 import 'package:safeshopping/models/Order.dart';
 import 'package:safeshopping/models/Product.dart';
+import 'package:safeshopping/models/SelectedCustomer.dart';
 import 'package:safeshopping/models/ShoppingCart.dart';
 import 'package:safeshopping/models/ShoppingCartTotal.dart';
 import 'package:safeshopping/models/User.dart';
@@ -59,6 +60,28 @@ class FirestoreServices extends GetxController {
           await _db.collection("Products").document(productId).get();
       ProductModel _productModel = ProductModel.fromDocumentSnapshot(doc);
       return _productModel;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<SelectedCustomerModel> getCheckoutCustomer(
+      String storeId, String customerId) async {
+    try {
+      DocumentSnapshot doc = await _db
+          .collection("Stores")
+          .document(storeId)
+          .collection("AwaitingCustomers")
+          .document(customerId)
+          .get();
+      if (doc.exists) {
+        SelectedCustomerModel _selectedCustomer =
+            SelectedCustomerModel.fromDocumentSnapshot(doc);
+        return _selectedCustomer;
+      } else {
+        return null;
+      }
     } catch (e) {
       print(e);
       rethrow;
@@ -459,10 +482,14 @@ class FirestoreServices extends GetxController {
               .collection("AwaitingOrders")
               .document(element.orderId)
               .setData({
-            "productId": element.productId,
-            "quantity": element.qty,
             "customerId": element.customerId,
             "dateCreated": element.dateCreated,
+            "isCompleted": "true",
+            "productId": element.productId,
+            "qty": element.qty.toString(),
+            "status": "Ready To Collect",
+            "storeId": element.storeId,
+            "unitPrice": element.unitPrice.toString(),
           });
           _db
               .collection("Customer")
@@ -489,6 +516,34 @@ class FirestoreServices extends GetxController {
                 (int.parse(checkOutTotalModel.totalCheckout) + total)
                     .toString(),
           });
+          SelectedCustomerModel customerModel =
+              await getCheckoutCustomer(storeId, element.customerId);
+          if (customerModel == null) {
+            await _db
+                .collection("Stores")
+                .document(storeId)
+                .collection("AwaitingCustomers")
+                .document(element.customerId)
+                .setData({
+              "customerId": element.customerId,
+              "itemCount": element.qty,
+              "checkoutTotal":
+                  (int.parse(checkOutTotalModel.totalCheckout) + total)
+                      .toString(),
+            });
+          } else {
+            await _db
+                .collection("Stores")
+                .document(storeId)
+                .collection("AwaitingCustomers")
+                .document(element.customerId)
+                .updateData({
+              "itemCount":
+                  (int.parse(customerModel.itemCount) + element.qty).toString(),
+              "checkoutTotal":
+                  (int.parse(customerModel.checkoutTotal) + total).toString()
+            });
+          }
         }
       });
     } catch (e) {

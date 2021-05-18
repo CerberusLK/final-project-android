@@ -13,6 +13,6 @@ class CompletedOrderController extends GetxController {
     super.onInit();
     String userId = Get.find<AuthController>().user.uid;
     _completedOrderList
-        .bindStream(FirestoreServices().getCompletedOrders(userId));
+        .bindStream(FirestoreServices().getReadyToCollectOrders(userId));
   }
 }

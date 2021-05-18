@@ -27,3 +27,4 @@ class MyApp extends StatelessWidget {
 
 
 //TODO: add a cusstomer order details
+//TODO: complete the accepted order and rejected order

@@ -18,7 +18,7 @@ class _OnGoingOrdersPageState extends State<OnGoingOrdersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Ready to Collect Orders"),
+        title: Text("Awaiting Orders"),
         centerTitle: true,
         elevation: 20,
       ),

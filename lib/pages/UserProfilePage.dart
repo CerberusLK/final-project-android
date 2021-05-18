@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:safeshopping/controllers/AuthController.dart';
 import 'package:safeshopping/controllers/CompletedOrderController.dart';
+import 'package:safeshopping/controllers/OnGoingOrderController.dart';
 import 'package:safeshopping/controllers/ReadyToCollectOrderController.dart';
 import 'package:safeshopping/controllers/UserController.dart';
 import 'package:safeshopping/pages/CompletedOrders.dart';
@@ -35,6 +36,8 @@ class _ProfileState extends State<Profile> {
         Get.put(ReadyToCollectOrderController());
     CompletedOrderController _completedOrderController =
         Get.put(CompletedOrderController());
+    OnGoingOrderController onGoingOrderController =
+        Get.put(OnGoingOrderController());
 
     bool enabled = true;
 
@@ -91,8 +94,12 @@ class _ProfileState extends State<Profile> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Obx(() => Text(_onGoingOrders.orderList.length
-                                    .toString())),
+                                Obx(
+                                  () => Text(
+                                    onGoingOrderController.orderList.length
+                                        .toString(),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -131,6 +138,67 @@ class _ProfileState extends State<Profile> {
                                 ),
                                 Obx(() => Text(_completedOrderController
                                     .orderList.length
+                                    .toString())),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              //Accepted and Rejected
+              Padding(
+                padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(style: BorderStyle.solid),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Get.to(() => OnGoingOrdersPage());
+                          },
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Icon(Icons.download_done_rounded),
+                                Text("Accepted Orders"),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Obx(
+                                  () => Text(
+                                    onGoingOrderController.orderList.length
+                                        .toString(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        VerticalDivider(),
+                        InkWell(
+                          onTap: () {
+                            Get.to(() => ReadyToCollectOrdersPage());
+                          },
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Icon(Icons.do_not_disturb_alt),
+                                Text("Rejected Orders"),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Obx(() => Text(_onGoingOrders.orderList.length
                                     .toString())),
                               ],
                             ),
